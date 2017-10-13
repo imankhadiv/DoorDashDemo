@@ -20,14 +20,9 @@ import elrast.com.doordashapp.model.Restaurant;
  */
 
 public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.RestaurantViewHolder> {
-    public interface OnFavoriteRestaurantListener {
-        void onStarImagePressed(int position);
-    }
-
     private ArrayList<Restaurant> restaurants;
     private Context context;
     private OnFavoriteRestaurantListener onFavoriteRestaurantListener;
-
     RestaurantAdapter(ArrayList<Restaurant> restaurants) {
         this.restaurants = restaurants;
     }
@@ -48,6 +43,10 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Re
     @Override
     public int getItemCount() {
         return restaurants.size();
+    }
+
+    public interface OnFavoriteRestaurantListener {
+        void onStarImagePressed(int position);
     }
 
     class RestaurantViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -76,7 +75,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Re
             description.setText(restaurant.getDescription());
             status.setText(restaurant.getStatus());
             Picasso.with(context).load(restaurant.getCoverImgUrl()).into(coverImage);
-            starImage.setActivated(restaurant.isFavorite());
+            starImage.setActivated(restaurant.getFavorite());
 
         }
 

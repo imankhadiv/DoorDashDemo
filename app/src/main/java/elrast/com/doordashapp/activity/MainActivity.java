@@ -11,25 +11,32 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Set;
 
 import elrast.com.doordashapp.R;
 import elrast.com.doordashapp.api.DoorDashApi;
 import elrast.com.doordashapp.model.Restaurant;
+import elrast.com.doordashapp.repository.DatabaseUtils;
+import elrast.com.doordashapp.repository.DoorDashDatabaseHelper;
 
 public class MainActivity extends AppCompatActivity implements RestaurantAdapter.OnFavoriteRestaurantListener {
 
     public static final String DOORDASH_LAT = "37.422740";
     public static final String DOORDASH_LNG = "-122.139956";
-    private TextView resultTextView;
+    private static final String UPDATE = "update";
+    private static final String DELETE = "delete";
+    private static final String RETRIEVE = "retrieve";
     private ProgressBar progressBarView;
     private ArrayList<Restaurant> restaurantList;
     private RecyclerView recyclerView;
+    private DoorDashDatabaseHelper databaseHelper;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +62,17 @@ public class MainActivity extends AppCompatActivity implements RestaurantAdapter
         URL url = DoorDashApi.buildUrl(DOORDASH_LAT, DOORDASH_LNG);
         new RestaurantQueryTask().execute(url);
     }
+
     @Override
     public void onStarImagePressed(int position) {
         Toast.makeText(this, position + " id " + restaurantList.get(position).getName(), Toast.LENGTH_LONG).show();
+        if (restaurantList.get(position).getFavorite()) {
+            new FavoriteRestaurantsTask(DELETE).execute(Integer.valueOf(restaurantList.get(position).getId()));
+            restaurantList.get(position).setFavorite(false);
+        } else {
+            new FavoriteRestaurantsTask(UPDATE).execute(Integer.valueOf(restaurantList.get(position).getId()));
+            restaurantList.get(position).setFavorite(true);
+        }
     }
 
     @Override
@@ -67,6 +82,34 @@ public class MainActivity extends AppCompatActivity implements RestaurantAdapter
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
+        }
+    }
+
+    private void defineFavorites(Set<Integer> favoriteIds) {
+        for (int i = 0; i < restaurantList.size(); i++) {
+            // must be TODO
+            if (favoriteIds == null || favoriteIds.size() == 0) {
+                return;
+            }
+            if (favoriteIds.contains(Integer.valueOf(restaurantList.get(i).getId()))) {
+                restaurantList.get(i).setFavorite(true);
+            }
+        }
+    }
+
+    private void loadUI() {
+        Collections.sort(restaurantList);
+        progressBarView.setVisibility(View.INVISIBLE);
+        RestaurantAdapter restaurantAdapter = new RestaurantAdapter(restaurantList);
+        recyclerView.setAdapter(restaurantAdapter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (databaseHelper != null) {
+            databaseHelper.close();
+            databaseHelper = null;
         }
     }
 
@@ -92,10 +135,51 @@ public class MainActivity extends AppCompatActivity implements RestaurantAdapter
         @Override
         protected void onPostExecute(String json) {
             if (json != null && !json.isEmpty()) {
-                progressBarView.setVisibility(View.INVISIBLE);
                 restaurantList = DoorDashApi.getRestaurantListFromJson(json);
-                RestaurantAdapter restaurantAdapter = new RestaurantAdapter(restaurantList);
-                recyclerView.setAdapter(restaurantAdapter);
+                new FavoriteRestaurantsTask(RETRIEVE).execute();
+            }
+        }
+    }
+
+    private class FavoriteRestaurantsTask extends AsyncTask<Integer, Void, Void> {
+
+        String action;
+        Set<Integer> favoriteIds;
+
+        FavoriteRestaurantsTask(String action) {
+            this.action = action;
+        }
+
+        @Override
+        protected Void doInBackground(Integer... params) {
+            databaseHelper = DoorDashDatabaseHelper.getInstance(MainActivity.this);
+            DatabaseUtils databaseUtils = new DatabaseUtils(databaseHelper.getWritableDatabase());
+
+            switch (action) {
+
+                case RETRIEVE:
+                    favoriteIds = databaseUtils.findFavoritesRestaurants();
+                    break;
+                case DELETE:
+                    databaseUtils.deleteAFavoriteRestaurant(params[0]);
+                    break;
+                default:
+                    databaseUtils.insertAFavoriteRestaurant(params[0]);
+                    break;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+
+            switch (action) {
+                case RETRIEVE:
+                    defineFavorites(favoriteIds);
+                    loadUI();
+                    break;
+                default:
+                    break;
             }
         }
     }
