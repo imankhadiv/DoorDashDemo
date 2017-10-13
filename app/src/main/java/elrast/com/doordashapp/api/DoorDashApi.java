@@ -14,14 +14,14 @@ import java.util.Scanner;
  * Created by iman on 10/13/17.
  */
 
-public class ApiUtil {
+public class DoorDashApi {
 
-    private static final String TAG = ApiUtil.class.getSimpleName();
+    private static final String TAG = DoorDashApi.class.getSimpleName();
     private static final String BASE_API_URL = "https://api.doordash.com/v2/restaurant/";
     private static final String LATITUDE = "lat";
     private static final String LONGITUDE = "lng";
 
-    private ApiUtil() {
+    private DoorDashApi() {
     }
 
     public static URL buildUrl(String lat, String lng) {
@@ -38,13 +38,11 @@ public class ApiUtil {
         return url;
     }
 
-    public static String getJson(URL url) throws IOException {
+    public static String getJsonString(URL url) throws IOException {
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         try {
             InputStream inputStream = connection.getInputStream();
-            Log.e("....", connection.getResponseCode() + "");
-            Log.e("////", connection.getResponseMessage());
             Scanner scanner = new Scanner(inputStream);
             scanner.useDelimiter("\\A");
             boolean hasData = scanner.hasNext();
@@ -55,7 +53,7 @@ public class ApiUtil {
                 return null;
             }
         } catch (Exception ex) {
-            Log.e("Error", ex.toString());
+            Log.e(TAG, ex.toString());
             return null;
         } finally {
             connection.disconnect();
