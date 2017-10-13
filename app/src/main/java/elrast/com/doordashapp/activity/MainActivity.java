@@ -13,9 +13,11 @@ import android.widget.TextView;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 
 import elrast.com.doordashapp.R;
 import elrast.com.doordashapp.api.DoorDashApi;
+import elrast.com.doordashapp.model.Restaurant;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String DOORDASH_LNG = "-122.139956";
     private TextView resultTextView;
     private ProgressBar progressBarView;
+    private ArrayList<Restaurant> restaurantList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,13 +82,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String json) {
             if (json != null && !json.isEmpty()) {
-                //restaurantList = ApiUtil.getRestaurantListFromJson(json);
-                //TextView textView = (TextView) findViewById(R.id.textView);
-                progressBarView.setVisibility(View.INVISIBLE);
-                resultTextView.setText(json);
 
-                //textView.setText(restaurantList.toString());
-                // new FavoriteRestaurantsTask(RETRIEVE).execute();
+                progressBarView.setVisibility(View.INVISIBLE);
+                restaurantList = DoorDashApi.getRestaurantListFromJson(json);
+                resultTextView.setText(restaurantList.toString());
+
             }
         }
     }
