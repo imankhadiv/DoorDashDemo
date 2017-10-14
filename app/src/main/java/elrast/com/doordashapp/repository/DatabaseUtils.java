@@ -8,9 +8,6 @@ import android.util.Log;
 
 import java.util.TreeSet;
 
-/**
- * Created by iman on 10/13/17.
- */
 
 public class DatabaseUtils {
 
