@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements RestaurantAdapter
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         toggle.syncState();
+        drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
 
         View appBarMain = findViewById(R.id.app_bar_main);
         View contentMainView = appBarMain.findViewById(R.id.content_main);
