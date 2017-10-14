@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import elrast.com.doordashapp.R;
+import elrast.com.doordashapp.api.ApiUtils;
 import elrast.com.doordashapp.api.DoorDashApi;
 import elrast.com.doordashapp.model.Restaurant;
 import elrast.com.doordashapp.repository.DatabaseUtils;
@@ -135,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements RestaurantAdapter
         @Override
         protected void onPostExecute(String json) {
             if (json != null && !json.isEmpty()) {
-                restaurantList = DoorDashApi.getRestaurantListFromJson(json);
+                restaurantList = ApiUtils.getRestaurantListFromJson(json);
                 new FavoriteRestaurantsTask(RETRIEVE).execute();
             }
         }

@@ -3,19 +3,12 @@ package elrast.com.doordashapp.api;
 import android.net.Uri;
 import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Scanner;
-
-import elrast.com.doordashapp.model.Restaurant;
 
 /**
  * Created by iman on 10/13/17.
@@ -67,32 +60,4 @@ public class DoorDashApi {
         }
     }
 
-    public static ArrayList<Restaurant> getRestaurantListFromJson(String json) {
-        ArrayList<Restaurant> books = new ArrayList<>();
-
-        final String ID = "id";
-        final String NAME = "name";
-        final String DESCRIPTION = "description";
-        final String COVER_IMAGE_URL = "cover_img_url";
-        final String STATUS = "status";
-        final String DELIVERY_FEE = "delivery_fee";
-
-        ArrayList<Restaurant> restaurantList = new ArrayList<>();
-        try {
-            JSONArray jsonArray = new JSONArray(json);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                Restaurant restaurant =
-                        new Restaurant(jsonObject.getString(ID),
-                                jsonObject.getString(NAME),
-                                jsonObject.getString(DESCRIPTION),
-                                jsonObject.getString(COVER_IMAGE_URL),
-                                jsonObject.getString(STATUS));
-                restaurantList.add(restaurant);
-            }
-        } catch (JSONException e1) {
-            e1.printStackTrace();
-        }
-        return restaurantList;
-    }
 }
