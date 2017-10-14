@@ -11,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.URL;
@@ -44,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements RestaurantAdapter
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.discover);
         setSupportActionBar(toolbar);
 
 
@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity implements RestaurantAdapter
 
     @Override
     public void onStarImagePressed(int position) {
-        Toast.makeText(this, position + " id " + restaurantList.get(position).getName(), Toast.LENGTH_LONG).show();
         if (restaurantList.get(position).getFavorite()) {
             new FavoriteRestaurantsTask(DELETE).execute(Integer.valueOf(restaurantList.get(position).getId()));
             restaurantList.get(position).setFavorite(false);
