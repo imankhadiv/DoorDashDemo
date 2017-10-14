@@ -22,6 +22,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withChild;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withParent;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 @RunWith(AndroidJUnit4.class)
@@ -53,7 +54,7 @@ public class MainActivityTest {
     @Test
     public void testToolbarTitleText_shouldHaveCorrectText() {
 
-        //onView(allOf)
+        onView(withText(R.string.discover)).check(matches(withParent(withId(R.id.toolbar))));
     }
 
     @Test
